@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  digital-transaction-db:
+    image: postgres:16-alpine
+    restart: always
+    networks:
+      - my-custom-network
+    environment:
+      POSTGRES_DB: digital-transaction-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - digital-transaction-db-data:/var/lib/postgresql/data
+
+  digital-transaction-ms:
+    hostname: digital-transaction-ms
+    container_name: digital-transaction-ms
+    networks:
+      - my-custom-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8081"
+
+volumes:
+  digital-transaction-db-data:
+
+networks:
+  my-custom-network:
+    driver: bridge

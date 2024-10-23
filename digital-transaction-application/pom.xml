@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>digital.transaction.challenge</groupId>
+        <artifactId>digital-transaction-service</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>digital-transaction-application</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>digital.transaction.challenge</groupId>
+            <artifactId>digital-transaction-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>digital.transaction.challenge</groupId>
+            <artifactId>digital-transaction-persistence</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>digital.transaction.challenge</groupId>
+            <artifactId>digital-transaction-http-resources</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>digital.transaction.challenge</groupId>
+            <artifactId>digital-transaction-messaging</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>digital.transaction.challenge</groupId>
+            <artifactId>digital-transaction-processor</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>digital-transaction</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>META-INF/**</include>
+                    <include>application.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                            <goal>build-info</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>app</finalName>
+                            <classifier>digital-transaction-application</classifier>
+                            <mainClass>digital.transaction.challenge.application.Application</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-spring-boot-application-file</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="copy application to parent target">
+                                <copy file="target/app-digital-transaction-application.jar" tofile="../target/digital-transaction.jar"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
