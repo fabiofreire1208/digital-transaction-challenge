@@ -1,7 +1,7 @@
 package digital.transaction.challenge.core.strategy;
 
+import digital.transaction.challenge.core.business.TransactionStrategy;
 import digital.transaction.challenge.domain.enums.TransactionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

@@ -1,6 +1,7 @@
 package digital.transaction.challenge.messaging.service;
 
-import digital.transaction.challenge.core.strategy.TransactionStrategy;
+import digital.transaction.challenge.core.business.TransactionStrategy;
+import digital.transaction.challenge.core.persistence.TransactionHistoryRepositoryPort;
 import digital.transaction.challenge.core.utils.JsonUtil;
 import digital.transaction.challenge.domain.Transaction;
 import digital.transaction.challenge.domain.enums.TransactionStatus;
@@ -17,15 +18,17 @@ public class TransactionOrchestrator {
     private final TransactionStrategyFactory strategyFactory;
     private final TransactionOrchestratorProducer orchestratorProducer;
     private final JsonUtil jsonUtil;
+    private final TransactionHistoryRepositoryPort transactionHistoryRepositoryPort;
 
     @Value("${spring.kafka.topic.notify-ending}")
     private String notifySagaTopic;
 
     @Autowired
-    public TransactionOrchestrator(TransactionStrategyFactory strategyFactory, TransactionOrchestratorProducer orchestratorProducer, JsonUtil jsonUtil) {
+    public TransactionOrchestrator(TransactionStrategyFactory strategyFactory, TransactionOrchestratorProducer orchestratorProducer, JsonUtil jsonUtil, TransactionHistoryRepositoryPort transactionHistoryRepositoryPort) {
         this.strategyFactory = strategyFactory;
         this.orchestratorProducer = orchestratorProducer;
         this.jsonUtil = jsonUtil;
+        this.transactionHistoryRepositoryPort = transactionHistoryRepositoryPort;
     }
 
     public void startSagaTransaction(Transaction transaction) {
@@ -36,10 +39,11 @@ public class TransactionOrchestrator {
 
             transaction.setStatus(TransactionStatus.CONFIRMED);
             transaction.setTransactionUpdateDate(LocalDateTime.now());
-            orchestratorProducer.send(jsonUtil.toJson(transaction), notifySagaTopic);
         } catch (Exception exception) {
             transaction.setStatus(TransactionStatus.FAILED);
             transaction.setTransactionUpdateDate(LocalDateTime.now());
+        } finally {
+            transactionHistoryRepositoryPort.save(transaction);
             orchestratorProducer.send(jsonUtil.toJson(transaction), notifySagaTopic);
         }
     }

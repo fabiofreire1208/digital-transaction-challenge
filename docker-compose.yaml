@@ -15,6 +15,21 @@ services:
     volumes:
       - digital-transaction-db-data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    networks:
+      - my-custom-network
+    ports:
+      - "5051:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: mypgadminpass
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - digital-transaction-db
+
   digital-transaction-ms:
     hostname: digital-transaction-ms
     container_name: digital-transaction-ms
@@ -28,6 +43,7 @@ services:
 
 volumes:
   digital-transaction-db-data:
+  pgadmin_data:
 
 networks:
   my-custom-network:
